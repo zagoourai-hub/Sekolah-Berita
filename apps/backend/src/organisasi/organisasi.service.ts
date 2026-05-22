@@ -9,10 +9,24 @@ import { PrismaService } from '../prisma/prisma.service.js';
 export class OrganisasiService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(dto: CreateOrganisasiDto, uploadedPhotoUrl?: string) {
+  private normalizeMember<
+    T extends {
+      Kelas?: string | null;
+      [key: string]: unknown;
+    },
+  >(member: T) {
+    const { Kelas, ...rest } = member;
+
+    return {
+      ...rest,
+      kelas: Kelas ?? null,
+    };
+  }
+
+  async create(dto: CreateOrganisasiDto, uploadedPhotoUrl?: string) {
     const finalPhotoUrl = uploadedPhotoUrl || dto.photoUrl || null;
 
-    return this.prisma.organisasiMember.create({
+    const member = await this.prisma.organisasiMember.create({
       data: {
         name: dto.name,
         position: dto.position,
@@ -22,10 +36,12 @@ export class OrganisasiService {
         isActive: dto.isActive ?? true,
       },
     });
+
+    return this.normalizeMember(member);
   }
 
-  findPublic() {
-    return this.prisma.organisasiMember.findMany({
+  async findPublic() {
+    const members = await this.prisma.organisasiMember.findMany({
       where: {
         isActive: true,
       },
@@ -33,20 +49,26 @@ export class OrganisasiService {
         sortOrder: 'asc',
       },
     });
+
+    return members.map((member) => this.normalizeMember(member));
   }
 
-  findAll() {
-    return this.prisma.organisasiMember.findMany({
+  async findAll() {
+    const members = await this.prisma.organisasiMember.findMany({
       orderBy: {
         sortOrder: 'asc',
       },
     });
+
+    return members.map((member) => this.normalizeMember(member));
   }
 
-  findOne(id: string) {
-    return this.prisma.organisasiMember.findUnique({
+  async findOne(id: string) {
+    const member = await this.prisma.organisasiMember.findUnique({
       where: { id },
     });
+
+    return member ? this.normalizeMember(member) : null;
   }
 
   async update(
@@ -64,7 +86,7 @@ export class OrganisasiService {
 
     const finalPhotoUrl = uploadedPhotoUrl || dto.photoUrl || existing.photoUrl;
 
-    return this.prisma.organisasiMember.update({
+    const member = await this.prisma.organisasiMember.update({
       where: { id },
       data: {
         name: dto.name ?? existing.name,
@@ -75,11 +97,15 @@ export class OrganisasiService {
         isActive: dto.isActive ?? existing.isActive,
       },
     });
+
+    return this.normalizeMember(member);
   }
 
-  remove(id: string) {
-    return this.prisma.organisasiMember.delete({
+  async remove(id: string) {
+    const member = await this.prisma.organisasiMember.delete({
       where: { id },
     });
+
+    return this.normalizeMember(member);
   }
 }

@@ -33,8 +33,12 @@ const images = {
 };
 
 async function seedSettings() {
+  if ((await prisma.setting.count()) > 0) {
+    return;
+  }
+
   const settings = [
-    { key: 'school_name', value: 'SMK Nusantara Digital' },
+    { key: 'school_name', value: 'SMA Sawit' },
     {
       key: 'school_tagline',
       value: 'Berkarakter, Berprestasi, Berwawasan Digital',
@@ -46,15 +50,13 @@ async function seedSettings() {
       value: 'Jl. Pendidikan No. 123, Jakarta Selatan 12345',
     },
     { key: 'school_instagram', value: '@smknusantaradigital' },
-    { key: 'school_youtube', value: 'SMK Nusantara Digital' },
+    { key: 'school_youtube', value: 'SMA Sawit' },
   ];
 
   await Promise.all(
     settings.map((setting) =>
-      prisma.setting.upsert({
-        where: { key: setting.key },
-        update: { value: setting.value },
-        create: setting,
+      prisma.setting.create({
+        data: setting,
       }),
     ),
   );
@@ -68,11 +70,7 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: { email: env.seed.adminEmail },
-    update: {
-      name: env.seed.adminName,
-      password: adminPassword,
-      role: 'ADMIN',
-    },
+    update: {},
     create: {
       name: env.seed.adminName,
       email: env.seed.adminEmail,
@@ -83,11 +81,7 @@ async function main() {
 
   const editor = await prisma.user.upsert({
     where: { email: env.seed.editorEmail },
-    update: {
-      name: env.seed.editorName,
-      password: env.seed.editorPass,
-      role: 'EDITOR',
-    },
+    update: {},
     create: {
       name: name,
       email: email,
@@ -123,11 +117,7 @@ async function main() {
     categorySeeds.map((category) =>
       prisma.category.upsert({
         where: { slug: slugify(category.name) },
-        update: {
-          name: category.name,
-          color: category.color,
-          description: category.description,
-        },
+        update: {},
         create: {
           ...category,
           slug: slugify(category.name),
@@ -142,11 +132,11 @@ async function main() {
 
   const newsSeeds = [
     {
-      title: 'Siswa SMK Nusantara Raih Juara 1 Lomba Web Design Tingkat Kota',
+      title: 'Siswa SMA Sawit Raih Juara 1 Lomba Web Design Tingkat Kota',
       excerpt:
-        'Tim Web Developer SMK Nusantara Digital berhasil meraih juara pertama dalam Lomba Web Design Tingkat Kota 2026.',
+        'Tim Web Developer SMA Sawit berhasil meraih juara pertama dalam Lomba Web Design Tingkat Kota 2026.',
       content:
-        'Prestasi membanggakan kembali diraih siswa SMK Nusantara Digital. Tim Web Developer sekolah berhasil menjadi juara pertama setelah menampilkan website informatif, responsif, dan memiliki pengalaman pengguna yang kuat. Kemenangan ini menjadi bukti kesiapan siswa menghadapi tantangan industri digital.',
+        'Prestasi membanggakan kembali diraih siswa SMA Sawit. Tim Web Developer sekolah berhasil menjadi juara pertama setelah menampilkan website informatif, responsif, dan memiliki pengalaman pengguna yang kuat. Kemenangan ini menjadi bukti kesiapan siswa menghadapi tantangan industri digital.',
       thumbnail: images.trophy,
       category: 'Prestasi',
       isBreaking: true,
@@ -172,7 +162,7 @@ async function main() {
       excerpt:
         'Pelaksanaan ujian akhir semester berlangsung tertib dengan jadwal yang sudah dibagikan kepada seluruh siswa.',
       content:
-        'SMK Nusantara Digital melaksanakan Ujian Akhir Semester Genap Tahun Ajaran 2025/2026. Seluruh siswa diimbau hadir tepat waktu, membawa perlengkapan ujian, dan mengikuti tata tertib yang telah disampaikan wali kelas.',
+        'SMA Sawit melaksanakan Ujian Akhir Semester Genap Tahun Ajaran 2025/2026. Seluruh siswa diimbau hadir tepat waktu, membawa perlengkapan ujian, dan mengikuti tata tertib yang telah disampaikan wali kelas.',
       thumbnail: images.exam,
       category: 'Akademik',
       isBreaking: false,
@@ -194,11 +184,11 @@ async function main() {
       viewCount: 570,
     },
     {
-      title: 'SMK Nusantara Ikuti Pameran Pendidikan & Teknologi 2026',
+      title: 'SMA Sawit Ikuti Pameran Pendidikan & Teknologi 2026',
       excerpt:
         'Siswa menampilkan karya inovatif di bidang teknologi informasi, desain, robotika, dan multimedia.',
       content:
-        'SMK Nusantara Digital berpartisipasi dalam pameran pendidikan dan teknologi. Stan sekolah menampilkan karya aplikasi web, desain interaktif, produk multimedia, dan prototipe teknologi yang dibuat siswa.',
+        'SMA Sawit berpartisipasi dalam pameran pendidikan dan teknologi. Stan sekolah menampilkan karya aplikasi web, desain interaktif, produk multimedia, dan prototipe teknologi yang dibuat siswa.',
       thumbnail: images.technology,
       category: 'Kegiatan',
       isBreaking: true,
@@ -220,11 +210,11 @@ async function main() {
       viewCount: 430,
     },
     {
-      title: 'Tim Robotik SMK Nusantara Lolos ke Tingkat Provinsi',
+      title: 'Tim Robotik SMA Sawit Lolos ke Tingkat Provinsi',
       excerpt:
         'Tim robotik sekolah melaju ke tingkat provinsi setelah meraih hasil terbaik pada seleksi tingkat kota.',
       content:
-        'Tim robotik SMK Nusantara Digital berhasil lolos ke tingkat provinsi. Keberhasilan ini didapat setelah siswa menampilkan robot yang stabil, cepat, dan mampu menyelesaikan misi lomba secara konsisten.',
+        'Tim robotik SMA Sawit berhasil lolos ke tingkat provinsi. Keberhasilan ini didapat setelah siswa menampilkan robot yang stabil, cepat, dan mampu menyelesaikan misi lomba secara konsisten.',
       thumbnail: images.robotics,
       category: 'Prestasi',
       isBreaking: false,
@@ -234,40 +224,28 @@ async function main() {
     },
   ];
 
-  await Promise.all(
-    newsSeeds.map((news, index) =>
-      prisma.news.upsert({
-        where: { slug: slugify(news.title) },
-        update: {
-          title: news.title,
-          excerpt: news.excerpt,
-          content: news.content,
-          thumbnail: news.thumbnail,
-          status: 'PUBLISHED',
-          isBreaking: news.isBreaking,
-          isFeatured: news.isFeatured,
-          publishedAt: news.publishedAt,
-          viewCount: news.viewCount,
-          authorId: index % 2 === 0 ? admin.id : editor.id,
-          categoryId: categoryByName[news.category].id,
-        },
-        create: {
-          title: news.title,
-          slug: slugify(news.title),
-          excerpt: news.excerpt,
-          content: news.content,
-          thumbnail: news.thumbnail,
-          status: 'PUBLISHED',
-          isBreaking: news.isBreaking,
-          isFeatured: news.isFeatured,
-          publishedAt: news.publishedAt,
-          viewCount: news.viewCount,
-          authorId: index % 2 === 0 ? admin.id : editor.id,
-          categoryId: categoryByName[news.category].id,
-        },
-      }),
-    ),
-  );
+  if ((await prisma.news.count()) === 0) {
+    await Promise.all(
+      newsSeeds.map((news, index) =>
+        prisma.news.create({
+          data: {
+            title: news.title,
+            slug: slugify(news.title),
+            excerpt: news.excerpt,
+            content: news.content,
+            thumbnail: news.thumbnail,
+            status: 'PUBLISHED',
+            isBreaking: news.isBreaking,
+            isFeatured: news.isFeatured,
+            publishedAt: news.publishedAt,
+            viewCount: news.viewCount,
+            authorId: index % 2 === 0 ? admin.id : editor.id,
+            categoryId: categoryByName[news.category].id,
+          },
+        }),
+      ),
+    );
+  }
 
   const announcements = [
     {
@@ -293,27 +271,22 @@ async function main() {
     },
   ];
 
-  await Promise.all(
-    announcements.map((announcement) =>
-      prisma.announcement.upsert({
-        where: { slug: slugify(announcement.title) },
-        update: {
-          content: announcement.content,
-          status: 'PUBLISHED',
-          isImportant: announcement.isImportant,
-          publishedAt: announcement.publishedAt,
-        },
-        create: {
-          title: announcement.title,
-          slug: slugify(announcement.title),
-          content: announcement.content,
-          status: 'PUBLISHED',
-          isImportant: announcement.isImportant,
-          publishedAt: announcement.publishedAt,
-        },
-      }),
-    ),
-  );
+  if ((await prisma.announcement.count()) === 0) {
+    await Promise.all(
+      announcements.map((announcement) =>
+        prisma.announcement.create({
+          data: {
+            title: announcement.title,
+            slug: slugify(announcement.title),
+            content: announcement.content,
+            status: 'PUBLISHED',
+            isImportant: announcement.isImportant,
+            publishedAt: announcement.publishedAt,
+          },
+        }),
+      ),
+    );
+  }
 
   const agendas = [
     {
@@ -346,27 +319,22 @@ async function main() {
     },
   ];
 
-  await Promise.all(
-    agendas.map((agenda) =>
-      prisma.agenda.upsert({
-        where: { slug: slugify(agenda.title) },
-        update: {
-          description: agenda.description,
-          location: agenda.location,
-          startDate: agenda.startDate,
-          status: 'PUBLISHED',
-        },
-        create: {
-          title: agenda.title,
-          slug: slugify(agenda.title),
-          description: agenda.description,
-          location: agenda.location,
-          startDate: agenda.startDate,
-          status: 'PUBLISHED',
-        },
-      }),
-    ),
-  );
+  if ((await prisma.agenda.count()) === 0) {
+    await Promise.all(
+      agendas.map((agenda) =>
+        prisma.agenda.create({
+          data: {
+            title: agenda.title,
+            slug: slugify(agenda.title),
+            description: agenda.description,
+            location: agenda.location,
+            startDate: agenda.startDate,
+            status: 'PUBLISHED',
+          },
+        }),
+      ),
+    );
+  }
 
   const achievements = [
     {
@@ -374,14 +342,14 @@ async function main() {
       description:
         'Tim Web Developer sekolah menjadi juara pertama tingkat kota.',
       image: images.trophy,
-      winner: 'Tim Web Developer SMK Nusantara',
+      winner: 'Tim Web Developer SMA Sawit',
       level: 'Kota',
       date: new Date('2026-05-19T08:00:00.000Z'),
     },
     {
       title: '5 Medali Olimpiade Nasional 2026',
       description:
-        'Siswa SMK Nusantara Digital meraih lima medali pada ajang olimpiade nasional.',
+        'Siswa SMA Sawit meraih lima medali pada ajang olimpiade nasional.',
       image: images.students,
       winner: 'Siswa Berprestasi',
       level: 'Nasional',
@@ -397,31 +365,24 @@ async function main() {
     },
   ];
 
-  await Promise.all(
-    achievements.map((achievement) =>
-      prisma.achievement.upsert({
-        where: { slug: slugify(achievement.title) },
-        update: {
-          description: achievement.description,
-          image: achievement.image,
-          winner: achievement.winner,
-          level: achievement.level,
-          date: achievement.date,
-          status: 'PUBLISHED',
-        },
-        create: {
-          title: achievement.title,
-          slug: slugify(achievement.title),
-          description: achievement.description,
-          image: achievement.image,
-          winner: achievement.winner,
-          level: achievement.level,
-          date: achievement.date,
-          status: 'PUBLISHED',
-        },
-      }),
-    ),
-  );
+  if ((await prisma.achievement.count()) === 0) {
+    await Promise.all(
+      achievements.map((achievement) =>
+        prisma.achievement.create({
+          data: {
+            title: achievement.title,
+            slug: slugify(achievement.title),
+            description: achievement.description,
+            image: achievement.image,
+            winner: achievement.winner,
+            level: achievement.level,
+            date: achievement.date,
+            status: 'PUBLISHED',
+          },
+        }),
+      ),
+    );
+  }
 
   const gallerySeeds = [
     {
@@ -446,25 +407,23 @@ async function main() {
     },
   ];
 
-  await prisma.gallery.deleteMany({
-    where: { title: { in: gallerySeeds.map((gallery) => gallery.title) } },
-  });
-  await prisma.gallery.createMany({ data: gallerySeeds });
+  if ((await prisma.gallery.count()) === 0) {
+    await prisma.gallery.createMany({ data: gallerySeeds });
+  }
 
-  await prisma.ppdbInfo.deleteMany({
-    where: { title: 'PPDB Online SMK Nusantara Digital' },
-  });
-  await prisma.ppdbInfo.create({
-    data: {
-      title: 'PPDB Online SMK Nusantara Digital',
-      content:
-        'Penerimaan peserta didik baru dibuka untuk program keahlian Rekayasa Perangkat Lunak, Teknik Komputer dan Jaringan, Desain Komunikasi Visual, dan Multimedia. Pendaftaran dapat dilakukan secara online atau langsung ke sekolah.',
-      banner: images.ppdb,
-      startDate: new Date('2026-05-19T08:00:00.000Z'),
-      endDate: new Date('2026-07-19T08:00:00.000Z'),
-      status: 'PUBLISHED',
-    },
-  });
+  if ((await prisma.ppdbInfo.count()) === 0) {
+    await prisma.ppdbInfo.create({
+      data: {
+        title: 'PPDB Online SMA Sawit',
+        content:
+          'Penerimaan peserta didik baru dibuka untuk program keahlian Rekayasa Perangkat Lunak, Teknik Komputer dan Jaringan, Desain Komunikasi Visual, dan Multimedia. Pendaftaran dapat dilakukan secara online atau langsung ke sekolah.',
+        banner: images.ppdb,
+        startDate: new Date('2026-05-19T08:00:00.000Z'),
+        endDate: new Date('2026-07-19T08:00:00.000Z'),
+        status: 'PUBLISHED',
+      },
+    });
+  }
 
   const mediaSeeds = [
     { filename: 'prestasi-unsplash.jpg', url: images.trophy },
@@ -474,16 +433,15 @@ async function main() {
     { filename: 'ppdb-unsplash.jpg', url: images.ppdb },
   ];
 
-  await prisma.media.deleteMany({
-    where: { filename: { in: mediaSeeds.map((media) => media.filename) } },
-  });
-  await prisma.media.createMany({
-    data: mediaSeeds.map((media) => ({
-      ...media,
-      mimeType: 'image/jpeg',
-      size: 0,
-    })),
-  });
+  if ((await prisma.media.count()) === 0) {
+    await prisma.media.createMany({
+      data: mediaSeeds.map((media) => ({
+        ...media,
+        mimeType: 'image/jpeg',
+        size: 0,
+      })),
+    });
+  }
 
   await seedSettings();
 }

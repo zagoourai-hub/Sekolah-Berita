@@ -95,6 +95,12 @@ export function OrganisasiList({
                 {item.position}
               </p>
 
+              {item.kelas ? (
+                <p className="mt-1 text-sm font-medium text-primary/80">
+                  Kelas: {item.kelas}
+                </p>
+              ) : null}
+
               <p className="mt-2 text-xs text-muted-foreground">
                 Urutan: {item.sortOrder}
               </p>

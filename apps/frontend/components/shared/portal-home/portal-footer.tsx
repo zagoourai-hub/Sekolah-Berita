@@ -23,7 +23,7 @@ function NewsletterCard() {
     <div>
       <h3 className="mb-2 font-bold">Newsletter</h3>
       <p className="mb-4 text-sm text-white/75">
-        Dapatkan berita terbaru dari SMA Sawit.
+        Dapatkan berita terbaru dari portal sekolah.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -61,6 +61,12 @@ function NewsletterCard() {
 }
 
 export function PortalFooter({ settings }: PortalFooterProps) {
+  const schoolName = schoolSetting(
+    settings,
+    "school_name",
+    defaultSchoolInfo.name,
+  );
+
   return (
     <footer id="kontak" className="mt-8 bg-school-navy text-white">
       <div className="container-school grid gap-8 py-8 md:grid-cols-[1.25fr_1fr_1fr_1.2fr]">
@@ -68,7 +74,7 @@ export function PortalFooter({ settings }: PortalFooterProps) {
           <LogoMark />
           <div>
             <h2 className="text-lg font-extrabold">
-              {schoolSetting(settings, "school_name", defaultSchoolInfo.name)}
+              {schoolName}
             </h2>
             <p className="mt-1 text-sm text-white/75">
               {schoolSetting(settings, "school_tagline", defaultSchoolInfo.tagline)}
@@ -119,7 +125,7 @@ export function PortalFooter({ settings }: PortalFooterProps) {
       </div>
 
       <div className="bg-secondary py-2 text-center text-xs font-semibold text-secondary-foreground">
-        (c) 2026 SMK Nusantara Digital. All rights reserved.
+        (c) 2026 {schoolName || "Portal Sekolah"}. All rights reserved.
       </div>
     </footer>
   );

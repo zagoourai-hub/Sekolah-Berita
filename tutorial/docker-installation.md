@@ -154,6 +154,28 @@ Data admin awal bawaan:
 
 Kalau nanti Anda mengganti isi file `.env`, data login bisa ikut berubah.
 
+Penting:
+
+- data admin awal ini hanya ada kalau Anda sudah menjalankan seed manual
+- mulai sekarang backend Docker tidak menjalankan seed otomatis saat startup
+
+### 7. Jalankan seed manual jika butuh data awal
+
+Kalau database masih kosong dan Anda ingin mendapatkan:
+
+- akun admin awal
+- kategori awal
+- berita contoh
+- settings sekolah awal
+
+jalankan perintah ini:
+
+```powershell
+docker compose exec backend npm run prisma:seed
+```
+
+Setelah seed selesai, baru login admin atau cek data public lagi.
+
 ## Bagian C - Perintah Penting yang Wajib Diketahui
 
 ### Menjalankan project lagi
@@ -168,6 +190,15 @@ Kalau Anda habis mengubah Dockerfile atau ingin build ulang:
 
 ```powershell
 docker compose up --build -d
+```
+
+Catatan:
+
+- perintah di atas tidak menjalankan seed otomatis
+- kalau Anda memang ingin isi data awal, jalankan manual:
+
+```powershell
+docker compose exec backend npm run prisma:seed
 ```
 
 ### Melihat log error

@@ -10,8 +10,7 @@ type PortalBreakingNewsProps = {
 };
 
 export function PortalBreakingNews({ items }: PortalBreakingNewsProps) {
-  const marqueeText =
-    "Siswa SMK Sawit Raih Juara 1 Lomba Web Design Tingkat Kota / SMK Sawit Ikuti Pameran Pendidikan & Teknologi 2026";
+  const marqueeText = items.map((item) => item.title).join(" / ");
   const text =
     items.length > 0 ? marqueeText : "Belum ada breaking news dari backend.";
   const copies = items.length > 0 ? [0, 1, 2] : [0];

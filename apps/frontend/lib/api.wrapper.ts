@@ -97,6 +97,10 @@ export async function apiFetch<T>(
   options: ApiFetchOptions = {},
 ): Promise<T> {
   const { method = "GET", auth = false, body, headers, ...restOptions } = options;
+  const requestCache =
+    method === "GET" && typeof restOptions.cache === "undefined"
+      ? "no-store"
+      : restOptions.cache;
 
   const requestHeaders: Record<string, string> = {
     Accept: "application/json",
@@ -129,6 +133,7 @@ export async function apiFetch<T>(
     headers: requestHeaders,
     body: requestBody,
     credentials: auth ? "include" : "same-origin",
+    cache: requestCache,
 
     ...restOptions,
   });

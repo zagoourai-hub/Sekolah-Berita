@@ -12,6 +12,11 @@ export const metadata = {
 
 export default async function ContactPage() {
   const settings = await getSettings();
+  const schoolName = schoolSetting(
+    settings,
+    "school_name",
+    defaultSchoolInfo.name || "sekolah",
+  );
 
   return (
     <main className="min-h-screen bg-background">
@@ -26,8 +31,8 @@ export default async function ContactPage() {
           </Link>
           <h1 className="text-3xl font-extrabold">Kontak Sekolah</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
-            Hubungi SMK Nusantara Digital untuk informasi akademik, PPDB, dan
-            kerja sama.
+            Hubungi {schoolName} untuk informasi akademik, PPDB, dan kerja
+            sama.
           </p>
         </div>
       </section>

@@ -11,7 +11,7 @@ export default async function NewsPage() {
   return (
     <PublicPageShell
       title="Berita Sekolah"
-      description="Kumpulan kabar terbaru, kegiatan, prestasi, dan informasi akademik dari SMK Nusantara Digital."
+      description="Kumpulan kabar terbaru, kegiatan, prestasi, dan informasi akademik dari sekolah."
       emptyMessage="Belum ada berita dari backend."
       items={news.map((item) => ({
         id: item.id,

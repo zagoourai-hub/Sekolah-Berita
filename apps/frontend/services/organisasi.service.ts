@@ -2,6 +2,9 @@ import { apiFetch } from "@/lib/api.wrapper";
 import { CreateOrganisasiPayload, Organisasi, UpdateOrganisasiPayload } from "@/types/school";
 import { normalizeAssetUrl } from "@/utils/media";
 
+type OrganisasiApiRecord = Organisasi & {
+  Kelas?: string | null;
+};
 
 function OrganisasiFormData(
   payload: CreateOrganisasiPayload | UpdateOrganisasiPayload,
@@ -39,15 +42,16 @@ function OrganisasiFormData(
   return formData;
 }
 
-function normalizeOrganisasi(item: Organisasi): Organisasi {
+function normalizeOrganisasi(item: OrganisasiApiRecord): Organisasi {
   return {
     ...item,
+    kelas: item.kelas ?? item.Kelas ?? null,
     photoUrl: item.photoUrl ? normalizeAssetUrl(item.photoUrl) ?? null : item.photoUrl,
   };
 }
 
 export async function getOrganisasiList(): Promise<Organisasi[]> {
-  const response = await apiFetch<Organisasi[]>("/organisasi/admin", {
+  const response = await apiFetch<OrganisasiApiRecord[]>("/organisasi/admin", {
     method: "GET",
     auth: true,
   });
@@ -56,7 +60,7 @@ export async function getOrganisasiList(): Promise<Organisasi[]> {
 }
 
 export async function getPublicOrganisasiList(): Promise<Organisasi[]> {
-  const response = await apiFetch<Organisasi[]>("/organisasi", {
+  const response = await apiFetch<OrganisasiApiRecord[]>("/organisasi", {
     method: "GET",
   });
 
@@ -64,7 +68,7 @@ export async function getPublicOrganisasiList(): Promise<Organisasi[]> {
 }
 
 export async function getOrganisasiById(id: string): Promise<Organisasi> {
-  const response = await apiFetch<Organisasi>(`/organisasi/${id}`, {
+  const response = await apiFetch<OrganisasiApiRecord>(`/organisasi/${id}`, {
     method: "GET",
     auth: true,
   });
@@ -77,7 +81,7 @@ export async function createOrganisasi(
 ): Promise<Organisasi> {
   const body = OrganisasiFormData(payload);
 
-  const response = await apiFetch<Organisasi>("/organisasi", {
+  const response = await apiFetch<OrganisasiApiRecord>("/organisasi", {
     method: "POST",
     auth: true,
     body,
@@ -92,7 +96,7 @@ export async function updateOrganisasi(
 ): Promise<Organisasi> {
   const body = OrganisasiFormData(payload);
 
-  const response = await apiFetch<Organisasi>(`/organisasi/${id}`, {
+  const response = await apiFetch<OrganisasiApiRecord>(`/organisasi/${id}`, {
     method: "PATCH",
     auth: true,
     body,

@@ -107,6 +107,11 @@ export default async function StrukturOrganisasiPage() {
                         <p className="mt-1 text-sm text-muted-foreground">
                           {item.name}
                         </p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                         Kelas : {item.kelas}
+                        </p>
+                        
+                        
                         <div className="mt-2 flex flex-col  gap-1 text-[10px] italic font-sans  text-muted-foreground">
                           <p>Dibuat : {formatDateTime(item.createdAt)}</p>
                           <p>Diubah : {formatDateTime(item.updatedAt)}</p>

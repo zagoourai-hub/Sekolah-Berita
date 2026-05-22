@@ -11,7 +11,7 @@ export default async function PpdbPage() {
   return (
     <PublicPageShell
       title="PPDB"
-      description="Informasi penerimaan peserta didik baru, periode pendaftaran, dan jalur masuk SMK Nusantara Digital."
+      description="Informasi penerimaan peserta didik baru, periode pendaftaran, dan jalur masuk sekolah."
       emptyMessage="Belum ada informasi PPDB dari backend."
       items={ppdb.map((item) => ({
         id: item.id,

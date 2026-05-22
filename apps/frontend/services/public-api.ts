@@ -36,6 +36,10 @@ type CollectionResponse<T> =
       Count?: number;
     };
 
+type OrganisasiApiRecord = Organisasi & {
+  Kelas?: string | null;
+};
+
 function mapPublicNewsItem(record: RawNews): NewsItem {
   const berita = mapNewsRecord(record);
 
@@ -102,9 +106,10 @@ function mapPublicPpdb(record: RawPpdb): Ppdb {
   };
 }
 
-function mapPublicOrganisasi(item: Organisasi): Organisasi {
+function mapPublicOrganisasi(item: OrganisasiApiRecord): Organisasi {
   return {
     ...item,
+    kelas: item.kelas ?? item.Kelas ?? null,
     photoUrl: item.photoUrl ? normalizeAssetUrl(item.photoUrl) ?? null : item.photoUrl,
   };
 }
@@ -185,7 +190,7 @@ export async function getPpdbList() {
 }
 
 export async function getOrganisasiPublicList() {
-  const records = await apiFetch<Organisasi[]>("/organisasi", {
+  const records = await apiFetch<OrganisasiApiRecord[]>("/organisasi", {
     method: "GET",
   });
 

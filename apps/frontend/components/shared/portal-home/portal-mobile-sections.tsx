@@ -6,7 +6,7 @@ import Link from "next/link";
 import type { HomeData, NewsItem } from "@/types/school";
 import { formatDate, stripHtml } from "@/utils/format";
 
-import { mobileActionItems, shortcutItems } from "./portal-home.data";
+import { defaultSchoolInfo, mobileActionItems, shortcutItems } from "./portal-home.data";
 import { getNewsImage, imageStyle, newsHref, schoolSetting } from "./portal-home.helpers";
 import { CategoryBadge, EmptyState, LogoMark, SectionHeading } from "./portal-shared";
 
@@ -101,6 +101,12 @@ type PortalMobileFooterCardProps = {
 };
 
 export function PortalMobileFooterCard({ settings }: PortalMobileFooterCardProps) {
+  const schoolName = schoolSetting(
+    settings,
+    "school_name",
+    defaultSchoolInfo.name,
+  );
+
   return (
     <section className="container-school mb-6 mt-5 lg:hidden">
       <div className="rounded-xl bg-school-navy p-4 text-white shadow-lg">
@@ -108,13 +114,13 @@ export function PortalMobileFooterCard({ settings }: PortalMobileFooterCardProps
           <LogoMark />
           <div>
             <h2 className="font-extrabold">
-              {schoolSetting(settings, "school_name", "SMK Nusantara Digital")}
+              {schoolName || "Portal Sekolah"}
             </h2>
             <p className="text-xs text-white/70">
               {schoolSetting(
                 settings,
                 "school_tagline",
-                "Berkarakter, Berprestasi, Berwawasan Digital",
+                defaultSchoolInfo.tagline,
               )}
             </p>
           </div>
@@ -129,7 +135,7 @@ export function PortalMobileFooterCard({ settings }: PortalMobileFooterCardProps
         </Link>
 
         <p className="mt-4 text-center text-xs text-white/60">
-          (c) 2026 SMK Nusantara Digital.
+          (c) 2026 {schoolName || "Portal Sekolah"}.
         </p>
       </div>
     </section>

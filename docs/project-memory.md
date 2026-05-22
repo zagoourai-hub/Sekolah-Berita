@@ -26,6 +26,7 @@ Implemented backend areas:
 - Generated Prisma client output under `apps/backend/src/generated/prisma`.
 - `.env.example` with database, JWT, app, upload, and seed variables.
 - Seed script in `apps/backend/prisma/seed.ts`, prepared but not executed.
+- Docker backend startup no longer runs `prisma:seed` automatically. Seed must be run manually when sample/bootstrap data is needed.
 - JWT auth with login/logout and HTTP-only cookie support.
 - Role guard for `ADMIN`, `EDITOR`, and `HEADMASTER`.
 - Zod validation pipe.
